@@ -1,0 +1,18 @@
+.container {
+  border: 1px solid black;
+  width: 333px;
+  height: 666px;
+  position: relative;
+}
+.item {
+  display: flex;
+  justify-content: space-between;
+}
+.controls {
+  position: absolute;
+  bottom: 0;
+}
+
+.controls > * {
+  display: block;
+}
