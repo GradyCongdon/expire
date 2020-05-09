@@ -1,18 +1,110 @@
+:root {
+  --yellow: rgb(255, 251, 186);
+
+  --black: rgb(72, 76, 68);
+  --red: #fa0213;
+  --white: #fffefc;
+
+  --cream: #fbf4e1;
+  --cream: #fefbea;
+  --pink: #d97599;
+  --grey: #8e8a81;
+
+  --bg: var(--cream);
+  --fg: var(--black);
+  --highlight: var(--pink);
+
+  --yellow: rgba(255, 248, 154, 0.75);
+  --black: #2f2f31;
+  --violet: rgba(152, 155, 210, 0.75);
+  --grey: #b5b5b4;
+
+  --bg: white;
+  --fg: black;
+  --highlight: orange;
+}
+body {
+  padding-left: 3rem;
+  padding-top: 3rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 .container {
-  border: 1px solid black;
   width: 333px;
   height: 666px;
   position: relative;
+  background-color: var(--bg);
+  /* background-image: url('noise.png'); */
+  color: var(--fg);
+  border: 1px solid var(--fg);
 }
+
+:root {
+  --exp-size: 2.5rem;
+}
+
 .item {
   display: flex;
   justify-content: space-between;
-}
-.controls {
-  position: absolute;
-  bottom: 0;
+  align-items: center;
 }
 
-.controls > * {
+/*
+:root {
+  --exp-size: 10rem;
+  --exp-pad: calc(var(--exp-size) / 2);
+}
+.item {
+  padding-top: var(--exp-pad);
+}
+.item .expiration {
+  position: absolute;
+}
+*/
+
+.item .name {
+  width: 95%;
+  font-size: 24px;
+}
+
+.item .expiration {
+  width: 45px;
+  text-align: right;
+  font-size: var(--exp-size);
+  margin-right: 0.5rem;
+  color: var(--highlight);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  justify-items: flex-end;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1;
+  justify-self: flex-start;
+  width: 100%;
+}
+
+.add {
   display: block;
+  grid-column: 2;
+  width: 50px;
+  height: 50px;
+  margin: 7px;
+  background-color: var(--bg);
+  border: 1px solid var(--fg);
+  border-radius: 50%;
+  font-size: 24px;
+}
+
+.controls .name {
+  background-color: transparent;
+  border: 1px solid var(--fg);
 }

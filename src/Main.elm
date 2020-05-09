@@ -18,7 +18,6 @@ main =
 type alias Item =
     { name : String
     , expiration : Int
-    , amount : Int
     }
 
 
@@ -31,7 +30,6 @@ type Msg
     = ItemAdd
     | ItemName String
     | ItemExpiration String
-    | ItemAmount String
     | ModeAdding
 
 
@@ -40,17 +38,18 @@ type alias Model =
     , mode : Mode
     , itemName : String
     , itemExpiration : Int
-    , itemAmount : Int
     }
 
 
 init : Model
 init =
-    { items = [ makeItem "melted onions" ]
+    { items =
+        [ makeItem "melted onions"
+        , makeItem2 "ham sandwich" 30
+        ]
     , mode = Reading
     , itemName = ""
     , itemExpiration = 1
-    , itemAmount = 100
     }
 
 
@@ -60,13 +59,19 @@ update msg model =
         ItemAdd ->
             let
                 item =
-                    makeItem model.itemName
+                    { name = model.itemName
+                    , expiration = model.itemExpiration
+                    }
             in
-            { model
-                | items = item :: model.items
-                , itemName = ""
-                , mode = Reading
-            }
+            if model.itemName == "" then
+                model
+
+            else
+                { model
+                    | items = item :: model.items
+                    , itemName = ""
+                    , mode = Reading
+                }
 
         ItemName name ->
             { model | itemName = name }
@@ -75,14 +80,6 @@ update msg model =
             case String.toInt expiration of
                 Just number ->
                     { model | itemExpiration = number }
-
-                Nothing ->
-                    model
-
-        ItemAmount amount ->
-            case String.toInt amount of
-                Just number ->
-                    { model | itemAmount = number }
 
                 Nothing ->
                     model
@@ -96,8 +93,8 @@ view model =
     main_ [ class "main" ]
         [ Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "style.css" ] []
         , div [ class "container" ]
-            [ renderItems model.items
-            , renderControls model |> div [ class "controls" ]
+            [ div [ class "items" ] (renderItems model.items)
+            , div [ class "controls" ] (renderControls model)
             ]
         ]
 
@@ -106,33 +103,60 @@ makeItem : String -> Item
 makeItem name =
     { name = name
     , expiration = 3
-    , amount = 100
     }
 
 
-renderItems : List Item -> Html Msg
+makeItem2 : String -> Int -> Item
+makeItem2 name expiration =
+    { name = name
+    , expiration = expiration
+    }
+
+
+renderItems : List Item -> List (Html Msg)
 renderItems items =
     items
+        |> List.sortBy .expiration
         |> List.map
             (\i ->
                 div [ class "item" ]
-                    [ span [ class "name" ] [ text i.name ]
-                    , span [ class "expiration" ] [ text (String.fromInt i.expiration) ]
-                    , span [ class "amount" ] [ text (String.fromInt i.amount) ]
+                    [ span [ class "expiration" ] [ text (String.fromInt i.expiration) ]
+                    , span [ class "name" ] [ text i.name ]
                     ]
             )
-        |> div [ class "items" ]
 
 
 renderControls : Model -> List (Html Msg)
 renderControls model =
+    let
+        expiration =
+            String.fromInt model.itemExpiration
+    in
     case model.mode of
         Reading ->
-            [ button [ type_ "submit", onClick ModeAdding ] [ text "+" ] ]
+            [ button [ type_ "submit", class "add", onClick ModeAdding ] [ text "+" ] ]
 
         Adding ->
-            [ input [ class "name", onInput ItemName, value model.itemName ] []
-            , input [ class "expiration", onInput ItemExpiration, value (String.fromInt model.itemExpiration) ] []
-            , input [ class "amount", onInput ItemAmount, value (String.fromInt model.itemAmount) ] []
-            , button [ type_ "submit", onClick ItemAdd ] [ text "add" ]
+            [ div [ class "left" ]
+                [ input [ class "name", onInput ItemName ] []
+                , renderExpiration expiration
+                ]
+            , button [ type_ "submit", class "add", onClick ItemAdd ] [ text "+" ]
             ]
+
+
+renderExpiration : String -> Html Msg
+renderExpiration expiration =
+    div [ class "expiration-container" ]
+        [ input
+            [ type_ "range"
+            , class "expiration"
+            , Html.Attributes.min "1"
+            , Html.Attributes.max "30"
+            , onInput ItemExpiration
+            , placeholder expiration
+            , value expiration
+            ]
+            []
+        , span [ class "expiration-value" ] [ text expiration ]
+        ]
